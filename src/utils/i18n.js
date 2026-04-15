@@ -1,0 +1,217 @@
+export const translations = {
+  en: {
+    // General
+    "app.title": "Clarified Curator",
+    "app.subtitle": "The Administrative Editorial",
+    "nav.dashboard": "Dashboard",
+    "nav.formArchive": "Form Archive",
+    "nav.pendingReview": "Pending Review",
+    "nav.reports": "Reports",
+    "nav.settings": "Settings",
+    "nav.signOut": "Sign Out",
+    "nav.userApprovals": "User approvals",
+    "nav.appUsers": "App Users",
+    "nav.navigation": "Navigation",
+
+    // Roles
+    "role.adminTitle": "Editorial Admin",
+    "role.adminSubtitle": "Registry Office",
+    "role.administrator": "Administrator",
+    "role.registryUser": "Registry user",
+    "role.guest": "Guest User",
+    "role.activeUser": "Active registry user",
+
+    // Auth (Login)
+    "login.welcome": "Welcome back",
+    "login.instructions": "Sign in with your username and password.",
+    "login.username": "Username",
+    "login.password": "Password",
+    "login.signIn": "Sign In",
+    "login.signingIn": "Signing in...",
+    "login.show": "Show",
+    "login.hide": "Hide",
+    "login.noAccount": "Don’t have an account?",
+    "login.register": "Register",
+
+    // Auth (Register)
+    "register.title": "Create account",
+    "register.subtitle": "Registry access requires admin approval.",
+    "register.usernameHint": "Letters, numbers, underscores only — no spaces.",
+    "register.creating": "Creating…",
+    "register.alreadyHaveAccount": "Already have an account?",
+    "register.signIn": "Sign in",
+
+    // Dashboard
+    "dash.title": "Registry Overview",
+    "dash.description": "Manage and track physical form submissions. Each entry is curated for precise administrative auditing and status monitoring.",
+    "dash.exportReport": "Export Report",
+    "dash.addNewForm": "Add New Form",
+    "dash.searchPlaceholder": "Search entries by company, ID, or initiator...",
+    "dash.filter": "Filter",
+    "dash.colCompany": "Company Name",
+    "dash.colFormNumber": "Form Number",
+    "dash.colFormDate": "Form Date",
+    "dash.colAddedBy": "Added By",
+    "dash.colActions": "Actions",
+    "dash.loading": "Loading registry…",
+    "dash.error": "Could not load forms. Check your connection.",
+    "dash.empty": "No forms yet. Use 'Add New Form' to create the first entry.",
+    "dash.noSearchMatch": "No entries match your search. Try another company name or ID.",
+
+    // New Form Modal & Actions
+    "form.createTitle": "Create New Form",
+    "form.createDesc": "Fill in the details to generate a new entry in the registry system.",
+    "form.submit": "Submit",
+    "form.submitting": "Submitting…",
+    "form.delete": "Delete",
+    "form.deleting": "Deleting...",
+
+    // Admin Approvals & User Management
+    "admin.title": "Pending Approvals",
+    "admin.subtitle": "Review and manage new registry users.",
+    "admin.empty": "You're all caught up! There are no pending requests right now.",
+    "admin.requestedAccess": "Requested access",
+    "admin.accept": "Accept",
+    "admin.reject": "Reject",
+
+    "adminUsers.title": "App Users",
+    "adminUsers.subtitle": "Manage all active registry users. Delete accounts or review access.",
+    "adminUsers.delete": "Delete",
+    "adminUsers.deleting": "Deleting...",
+    "adminUsers.password": "Password",
+    "adminUsers.show": "Reveal",
+    "adminUsers.hide": "Hide",
+    "adminUsers.empty": "No users found in the system.",
+    "adminUsers.makeAdmin": "Make Admin",
+    "adminUsers.removeAdmin": "Remove Admin",
+    "adminUsers.updating": "Updating...",
+
+    // Settings
+    "settings.title": "Settings",
+    "settings.subtitle": "Manage your workspace preferences and identity.",
+    "settings.tabProfile": "Profile",
+    "settings.tabAppearance": "Appearance",
+    "settings.profileTitle": "Profile",
+    "settings.themeTitle": "Appearance",
+    "settings.lightMode": "Light Mode",
+    "settings.darkMode": "DarkMode",
+    "settings.fullName": "Full Name",
+    "settings.email": "Email",
+    "settings.access": "Access",
+    "settings.awaitingApproval": "Awaiting approval from an administrator.",
+    
+    // Pending Screen
+    "pending.title": "Awaiting admin approval",
+    "pending.subtitle": "Your account is registered but an administrator must approve it before you can use the app.",
+    "pending.signOut": "Sign out",
+    "rejected.signOut": "Signing you out…"
+  },
+  ar: {
+    // General
+    "app.title": "بيانات مديونية الشركات",
+    "app.subtitle": "الإدارة التحريرية",
+    "nav.dashboard": "لوحة القيادة",
+    "nav.formArchive": "أرشيف النماذج",
+    "nav.pendingReview": "قيد المراجعة",
+    "nav.reports": "التقارير",
+    "nav.settings": "الإعدادات",
+    "nav.signOut": "تسجيل الخروج",
+    "nav.userApprovals": "موافقات المستخدمين",
+    "nav.appUsers": "مستخدمين التطبيق",
+    "nav.navigation": "التنقل",
+
+    // Roles
+    "role.adminTitle": "المدير التحريري",
+    "role.adminSubtitle": "مكتب التسجيل",
+    "role.administrator": "مسؤول",
+    "role.registryUser": "مستخدم السجل",
+    "role.guest": "ضيف",
+    "role.activeUser": "مستخدم سجل نشط",
+
+    // Auth (Login)
+    "login.welcome": "مرحباً بعودتك",
+    "login.instructions": "قم بتسجيل الدخول باستخدام اسم المستخدم وكلمة المرور.",
+    "login.username": "اسم المستخدم",
+    "login.password": "كلمة المرور",
+    "login.signIn": "دخول",
+    "login.signingIn": "جاري الدخول...",
+    "login.show": "عرض",
+    "login.hide": "إخفاء",
+    "login.noAccount": "ليس لديك حساب؟",
+    "login.register": "إنشاء حساب",
+
+    // Auth (Register)
+    "register.title": "إنشاء حساب جديد",
+    "register.subtitle": "التسجيل يتطلب موافقة المسؤول.",
+    "register.usernameHint": "أحرف، أرقام، شرطة سفلية فقط — بدون مسافات.",
+    "register.creating": "جاري الإنشاء…",
+    "register.alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "register.signIn": "تسجيل الدخول",
+
+    // Dashboard
+    "dash.title": "نظرة عامة على السجل",
+    "dash.description": "إدارة وتتبع النماذج الفعلية. كل إدخال يتم تنسيقه للتدقيق الإداري والمراقبة.",
+    "dash.exportReport": "تصدير التقرير",
+    "dash.addNewForm": "إضافة نموذج جديد",
+    "dash.searchPlaceholder": "ابحث باسم الشركة، المعرف، أو المنشئ...",
+    "dash.filter": "تصفية",
+    "dash.colCompany": "اسم الشركة",
+    "dash.colFormNumber": "رقم النموذج",
+    "dash.colFormDate": "تاريخ النموذج",
+    "dash.colAddedBy": "أُضيف بواسطة",
+    "dash.colActions": "إجراءات",
+    "dash.loading": "جاري تحميل السجل…",
+    "dash.error": "تعذر تحميل النماذج. تحقق من الاتصال.",
+    "dash.empty": "لا توجد نماذج بعد. استخدم الزر لإنشاء أول إدخال.",
+    "dash.noSearchMatch": "لا توجد إدخالات تطابق بحثك. جرب اسم شركة آخر.",
+
+
+    // New Form Modal & Actions
+    "form.createTitle": "إضافة نموذج جديد",
+    "form.createDesc": "املأ التفاصيل لإنشاء قيد جديد في السجل.",
+    "form.submit": "إرسال",
+    "form.submitting": "جاري الإرسال…",
+    "form.delete": "حذف",
+    "form.deleting": "جاري الحذف...",
+
+    // Admin Approvals & User Management
+    "admin.title": "الموافقات المعلقة",
+    "admin.subtitle": "مراجعة وإدارة المستخدمين الجدد.",
+    "admin.empty": "أنت على اطلاع بكل شيء! لا توجد طلبات معلقة حالياً.",
+    "admin.requestedAccess": "طلب الوصول",
+    "admin.accept": "قبول",
+    "admin.reject": "رفض",
+
+    "adminUsers.title": "مستخدمين التطبيق",
+    "adminUsers.subtitle": "إدارة جميع مستخدمي السجل النشطين. حذف الحسابات ومراجعة الوصول.",
+    "adminUsers.delete": "حذف",
+    "adminUsers.deleting": "جاري الحذف...",
+    "adminUsers.password": "كلمة المرور",
+    "adminUsers.show": "إظهار",
+    "adminUsers.hide": "إخفاء",
+    "adminUsers.empty": "لا يوجد مستخدمين مسجلين.",
+    "adminUsers.makeAdmin": "ترقية لمسؤول",
+    "adminUsers.removeAdmin": "إزالة المسؤولية",
+    "adminUsers.updating": "جاري التحديث...",
+
+    // Settings
+    "settings.title": "الإعدادات",
+    "settings.subtitle": "أدِر هويتك وتفضيلات مساحة العمل الخاصة بك.",
+    "settings.tabProfile": "الملف الشخصي",
+    "settings.tabAppearance": "المظهر",
+    "settings.profileTitle": "الملف الشخصي",
+    "settings.themeTitle": "المظهر",
+    "settings.lightMode": "الوضع الفاتح",
+    "settings.darkMode": "الوضع الداكن",
+    "settings.fullName": "الاسم الكامل",
+    "settings.email": "البريد الإلكتروني",
+    "settings.access": "الصلاحيات",
+    "settings.awaitingApproval": "بانتظار موافقة المسؤول.",
+    
+    // Pending Screen
+    "pending.title": "بانتظار الموافقة",
+    "pending.subtitle": "حسابك مسجل ولكن يجب على المسؤول الموافقة عليه قبل الاستخدام.",
+    "pending.signOut": "تسجيل خروج",
+    "rejected.signOut": "جاري تسجيل الخروج…"
+  }
+};

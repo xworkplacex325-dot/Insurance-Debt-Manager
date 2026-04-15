@@ -1,7 +1,6 @@
-import { createContext, useContext, useState, cloneElement, useEffect } from "react";
+import { useContext, useState, cloneElement } from "react";
 import { createPortal } from "react-dom";
-
-const ModalContext = createContext();
+import { ModalContext } from "./modalContext";
 
 function Modal({ children }) {
   const [openName, setOpenName] = useState("");
@@ -10,9 +9,7 @@ function Modal({ children }) {
   const open = setOpenName;
 
   return (
-    <ModalContext.Provider value={{ openName, close, open }}>
-      {children}
-    </ModalContext.Provider>
+    <ModalContext.Provider value={{ openName, close, open }}>{children}</ModalContext.Provider>
   );
 }
 
@@ -28,25 +25,32 @@ function Window({ children, name }) {
   if (name !== openName) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-auto">
+    <div
+      className="pointer-events-auto fixed inset-0 z-[100] flex items-center
+        justify-center"
+    >
       {/* Dimmed Background */}
-      <div 
-        className="fixed inset-0 bg-on-background/10 backdrop-blur-[2px]" 
-        onClick={close}
-      ></div>
-      
+      <div className="fixed inset-0 bg-on-background/10 backdrop-blur-[2px]" onClick={close}></div>
+
       {/* Modal Container */}
-      <div className="relative bg-surface-container-lowest rounded-xl shadow-[0_40px_80px_rgba(44,52,55,0.12)] border border-outline-variant/10 overflow-hidden transform transition-all animate-in fade-in zoom-in-95 duration-200 p-6 z-10 w-full max-w-lg m-4">
-        <button 
+      <div
+        className="animate-in fade-in zoom-in-95 relative z-10 m-4 w-full max-w-lg
+          transform overflow-hidden rounded-xl border border-outline-variant/10
+          bg-surface-container-lowest p-6 shadow-[0_40px_80px_rgba(44,52,55,0.12)]
+          transition-all duration-200"
+      >
+        <button
           onClick={close}
-          className="absolute top-4 right-4 p-2 text-on-surface-variant dark:text-slate-400 hover:bg-surface-container-high dark:hover:bg-slate-800 rounded-full transition-colors flex items-center justify-center cursor-pointer select-none"
+          className="absolute right-4 top-4 flex cursor-pointer select-none items-center
+            justify-center rounded-full p-2 text-on-surface-variant transition-colors
+            hover:bg-surface-container-high dark:text-slate-400 dark:hover:bg-slate-800"
         >
-          <span className="material-symbols-outlined font-bold text-[20px]">close</span>
+          <span className="material-symbols-outlined text-[20px] font-bold">close</span>
         </button>
         {children}
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
 

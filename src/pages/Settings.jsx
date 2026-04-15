@@ -1,119 +1,361 @@
-import { useTheme } from '../contexts/ThemeContext';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useTheme } from "../contexts/ThemeContext";
+import { useSupabaseUser, isUserAdmin, logout } from "../hooks/useSupabaseUser";
+import { supabase } from "../hooks/useSupabase";
+import { useLanguage } from "../contexts/LanguageContext";
+const tabs = [
+  { id: "profile", label: "Profile" },
+  { id: "appearance", label: "Appearance" },
+];
 
 export default function Settings() {
+  const navigate = useNavigate();
+  const { t } = useLanguage();
   const { theme, setTheme, toggleTheme } = useTheme();
+  const {
+    data: authPayload,
+    isLoading: authLoading,
+    isError: authError,
+    error: authErr,
+  } = useSupabaseUser();
+  const user = authPayload?.user ?? null;
+  const appUser = authPayload?.appUser ?? null;
+  const admin = isUserAdmin(user, appUser);
+
+  const [activeTab, setActiveTab] = useState("profile");
+
+  function handleSignOut() {
+    logout();
+  }
 
   return (
-    <div className="bg-background text-on-surface min-h-screen pt-20 flex">
-      {/* Shell Suppression: TopNavBar used but modified for context */}
-      <nav className="fixed top-0 w-full z-50 bg-slate-50/80 backdrop-blur-xl shadow-sm px-8 py-4 w-full max-w-screen-2xl mx-auto flex justify-between items-center">
+    <div
+      className="flex min-h-screen bg-background pt-20 text-on-surface
+        dark:bg-slate-950 dark:text-slate-50"
+    >
+      <nav
+        className="fixed top-0 z-50 mx-auto flex w-full max-w-screen-2xl items-center
+          justify-between border-b border-transparent bg-slate-50/80 px-8 py-4 shadow-sm
+          backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/90"
+      >
         <div className="flex items-center gap-6">
-          <span className="text-2xl font-bold tracking-tight text-slate-900">Clarified Curator</span>
-          <div className="hidden md:flex items-center space-x-8 ml-10">
-            <a className="text-slate-500 hover:bg-slate-200/50 transition-colors px-3 py-1 rounded-lg" href="/">Dashboard</a>
-            <a className="text-slate-500 hover:bg-slate-200/50 transition-colors px-3 py-1 rounded-lg" href="#">Form Archive</a>
-            <a className="text-blue-700 border-b-2 border-blue-700 font-bold px-3 py-1" href="/settings">Settings</a>
+          <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+            {t("app.title")}
+          </span>
+          <div className="ml-10 hidden items-center space-x-8 md:flex">
+            <a
+              className="rounded-lg px-3 py-1 text-slate-500 transition-colors
+                hover:bg-slate-200/50 dark:text-slate-400 dark:hover:bg-slate-800/50"
+              href="/"
+            >
+              {t("nav.dashboard")}
+            </a>
+            <span
+              className="rounded-lg border-b-2 border-blue-700 px-3 py-1 font-bold
+                text-blue-700 dark:border-blue-400 dark:text-blue-400"
+            >
+              {t("nav.settings")}
+            </span>
           </div>
         </div>
-        <div className="flex items-center space-y-0 space-x-4">
-          <button onClick={toggleTheme} className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-full transition-colors flex items-center justify-center">
-            <span className="material-symbols-outlined">{theme === 'dark' ? 'light_mode' : 'dark_mode'}</span>
+        <div className="flex items-center space-x-4 space-y-0">
+          <button
+            onClick={toggleTheme}
+            className="flex items-center justify-center rounded-full p-2 text-slate-500
+              transition-colors hover:bg-slate-200/50 dark:text-slate-400
+              dark:hover:bg-slate-800/50"
+          >
+            <span className="material-symbols-outlined">
+              {theme === "dark" ? "light_mode" : "dark_mode"}
+            </span>
           </button>
-          <button className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-full transition-colors">
-            <span className="material-symbols-outlined" data-icon="notifications">notifications</span>
-          </button>
-          <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-bold text-slate-900">Admin User</p>
-              <p className="text-xs text-slate-500 uppercase tracking-wider">Registry Office</p>
+          <div className="flex items-center gap-3 border-l border-slate-200 pl-4 dark:border-slate-700">
+            <div className="hidden text-right sm:block">
+              <p className="text-sm font-bold text-slate-900 dark:text-slate-50">
+                {appUser?.username || user?.email || t("role.guest")}
+              </p>
+              <p className="text-xs uppercase tracking-wider text-slate-500">
+                {admin ? t("role.administrator") : t("role.registryUser")}
+              </p>
             </div>
-            <img alt="User profile avatar" className="w-10 h-10 rounded-full bg-surface-container-highest object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmpBcmI-ekiOrUsS8o7WyIlCqyTNulv2Z0MmI6tZUdY-eYEItbsqses7oKKhnCi-7YMfBj9T0CuIPXsqnUq0sSkv2RAq2_nKOjYQig6LBAy2zcyOHm-mf07huvmzFyAcRrLrznzS53CrXVHVvmBqUWCiK4maa4YY7_nf6AWujSeE-zukkLKt6A4keiFnpBwzSVZjCYQhDARXTj9KTR5z64w_eCoCYJlfKQzdF8UPDa-yKg97iYRYOGoTUCzyDcBUWrHQeUi6wfkG15"/>
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-full
+                bg-surface-container-highest text-sm font-bold text-on-surface-variant
+                dark:bg-slate-800 dark:text-slate-300"
+            >
+              {(appUser?.username || user?.email || "?").charAt(0).toUpperCase()}
+            </div>
           </div>
         </div>
       </nav>
-      
-      {/* Sidebar Navigation */}
-      <aside className="h-full w-64 fixed top-20 bottom-0 p-6 space-y-8 bg-slate-100 hidden lg:flex flex-col">
+
+      <aside
+        className="fixed bottom-0 top-20 hidden h-full w-64 flex-col space-y-8
+          bg-slate-100 p-6 dark:bg-slate-900/80 lg:flex"
+      >
         <div className="space-y-1">
-          <p className="px-4 text-[10px] uppercase tracking-[0.1em] text-outline font-bold mb-4">Navigation</p>
-          <a className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-all duration-200 rounded-lg group" href="/">
-            <span className="material-symbols-outlined" data-icon="dashboard">dashboard</span>
-            <span className="font-medium">Dashboard</span>
+          <p
+            className="mb-4 px-4 text-[10px] font-bold uppercase tracking-[0.1em]
+              text-outline dark:text-slate-500"
+          >
+            {t("nav.navigation")}
+          </p>
+          <a
+            className="group flex items-center gap-3 rounded-lg px-4 py-3 text-slate-600
+              transition-all duration-200 hover:bg-slate-200 hover:text-slate-900
+              dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50"
+            href="/"
+          >
+            <span className="material-symbols-outlined" data-icon="dashboard">
+              dashboard
+            </span>
+            <span className="font-medium">{t("nav.dashboard")}</span>
           </a>
-          <a className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-all duration-200 rounded-lg group" href="#">
-            <span className="material-symbols-outlined" data-icon="description">description</span>
-            <span className="font-medium">Form Archive</span>
-          </a>
+          {admin ? (
+            <>
+              <Link
+                to="/admin"
+                className="group flex items-center gap-3 rounded-lg px-4 py-3 text-slate-600
+                  transition-all duration-200 hover:bg-slate-200 hover:text-slate-900
+                  dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50"
+              >
+                <span className="material-symbols-outlined" data-icon="group">
+                  group
+                </span>
+                <span className="font-medium">{t("nav.userApprovals")}</span>
+              </Link>
+              <Link
+                to="/admin/users"
+                className="group flex items-center gap-3 rounded-lg px-4 py-3 text-slate-600
+                  transition-all duration-200 hover:bg-slate-200 hover:text-slate-900
+                  dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50"
+              >
+                <span className="material-symbols-outlined" data-icon="manage_accounts">
+                  manage_accounts
+                </span>
+                <span className="font-medium">{t("nav.appUsers")}</span>
+              </Link>
+            </>
+          ) : null}
         </div>
         <div className="mt-auto space-y-1">
-          <a className="flex items-center gap-3 px-4 py-3 bg-white text-blue-700 font-semibold rounded-lg shadow-sm transition-all duration-200" href="/settings">
-            <span className="material-symbols-outlined" data-icon="settings">settings</span>
-            <span className="font-medium">Settings</span>
-          </a>
-          <a className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-all duration-200 rounded-lg group" href="/login">
-            <span className="material-symbols-outlined" data-icon="logout">logout</span>
-            <span className="font-medium">Sign Out</span>
-          </a>
+          <span
+            className="flex items-center gap-3 rounded-lg bg-white px-4 py-3 font-semibold
+              text-blue-700 shadow-sm dark:bg-slate-800 dark:text-blue-400"
+          >
+            <span className="material-symbols-outlined" data-icon="settings">
+              settings
+            </span>
+            <span className="font-medium">{t("nav.settings")}</span>
+          </span>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="group flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left
+              text-slate-600 transition-all duration-200 hover:bg-slate-200
+              hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800
+              dark:hover:text-slate-50"
+          >
+            <span className="material-symbols-outlined" data-icon="logout">
+              logout
+            </span>
+            <span className="font-medium">{t("nav.signOut")}</span>
+          </button>
         </div>
       </aside>
-      
-      {/* Main Content Canvas */}
-      <main className="flex-1 lg:ml-64 p-8 md:p-12 lg:p-16 max-w-5xl mx-auto w-full">
-        <header className="mb-12">
-          <h1 className="text-5xl font-extrabold tracking-tighter text-on-surface mb-2">Settings</h1>
-          <p className="text-on-surface-variant font-medium text-lg">Manage your workspace preferences and identity.</p>
+
+      <main
+        className="mx-auto w-full max-w-5xl flex-1 p-8 md:p-12 lg:ml-64 lg:p-16
+          dark:bg-transparent"
+      >
+        <header className="mb-8">
+          <h1 className="mb-2 text-5xl font-extrabold tracking-tighter text-on-surface dark:text-slate-50">
+            {t("settings.title")}
+          </h1>
+          <p className="text-lg font-medium text-on-surface-variant dark:text-slate-400">
+            {t("settings.subtitle")}
+          </p>
         </header>
-        <div className="space-y-16">
-          {/* Profile Settings Section */}
-          <section>
-            <div className="flex items-baseline justify-between mb-8">
-              <h2 className="text-2xl font-bold tracking-tight">Profile Settings</h2>
-              <span className="text-xs font-bold uppercase tracking-widest text-outline">Section 01</span>
-            </div>
-            <div className="bg-surface-container-low rounded-xl p-8 space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-on-surface-variant ml-1">Full Name</label>
-                  <input className="w-full bg-surface-container-lowest border border-outline-variant/15 rounded-lg px-4 py-3 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all" type="text" defaultValue="Alexander Hamilton"/>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-on-surface-variant ml-1">Email Address</label>
-                  <input className="w-full bg-surface-container-lowest border border-outline-variant/15 rounded-lg px-4 py-3 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all" type="email" defaultValue="a.hamilton@registry.gov"/>
-                </div>
-              </div>
-            </div>
-          </section>
-          {/* Appearance Section */}
-          <section>
-            <div className="flex items-baseline justify-between mb-8">
-              <h2 className="text-2xl font-bold tracking-tight">Appearance</h2>
-              <span className="text-xs font-bold uppercase tracking-widest text-outline">Section 03</span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Light Mode Option */}
-              <div onClick={() => setTheme('light')} className={`relative bg-white border-2 ${theme === 'light' ? 'border-primary' : 'border-transparent hover:border-slate-300'} rounded-2xl p-6 cursor-pointer overflow-hidden transition-all`}>
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-primary" data-icon="light_mode">light_mode</span>
-                    <span className="font-bold text-on-surface">Light Mode</span>
-                  </div>
-                  <div className={`w-5 h-5 rounded-full border-4 ${theme === 'light' ? 'border-primary bg-white' : 'border-slate-300'}`}></div>
-                </div>
-              </div>
-              
-              {/* Dark Mode Option */}
-              <div onClick={() => setTheme('dark')} className={`relative bg-slate-900 border-2 ${theme === 'dark' ? 'border-primary' : 'border-transparent hover:border-slate-700'} rounded-2xl p-6 cursor-pointer overflow-hidden transition-all`}>
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-slate-400" data-icon="dark_mode">dark_mode</span>
-                    <span className="font-bold text-white">Dark Mode</span>
-                  </div>
-                  <div className={`w-5 h-5 rounded-full border-4 ${theme === 'dark' ? 'border-primary bg-slate-900' : 'border-slate-700'}`}></div>
-                </div>
-              </div>
-            </div>
-          </section>
+
+        <div
+          className="mb-10 flex flex-wrap gap-2 border-b border-outline-variant/20
+            pb-px dark:border-slate-800"
+        >
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`rounded-t-lg px-4 py-2.5 text-sm font-bold transition-colors ${
+                activeTab === tab.id
+                  ? "bg-surface-container-low text-primary dark:bg-slate-800 dark:text-blue-400"
+                  : "text-on-surface-variant hover:bg-surface-container-low/60 dark:text-slate-400 dark:hover:bg-slate-800/50"
+              }`}
+            >
+              {t(tab.id === "profile" ? "settings.tabProfile" : "settings.tabAppearance")}
+            </button>
+          ))}
         </div>
+
+        {activeTab === "profile" && (
+          <div className="space-y-16">
+            <section>
+              <div className="mb-8 flex items-baseline justify-between">
+                <h2 className="text-2xl font-bold tracking-tight">{t("settings.profileTitle")}</h2>
+                <span className="text-xs font-bold uppercase tracking-widest text-outline">
+                  Account
+                </span>
+              </div>
+              {authLoading ? (
+                <p className="text-sm text-on-surface-variant dark:text-slate-400">
+                  Loading account…
+                </p>
+              ) : authError ? (
+                <div
+                  className="rounded-lg border border-error-container/40 bg-error-container/10
+                    p-4 text-sm text-on-error-container dark:text-error-container"
+                >
+                  <p className="font-semibold">Could not load profile</p>
+                  <p className="mt-1">{authErr?.message}</p>
+                  <p className="mt-2 text-xs opacity-90">
+                  Create the <code className="rounded bg-black/10 px-1">public.users</code> table
+                  and policies from{" "}
+                  <code className="rounded bg-black/10 px-1">supabase/setup-users-approval.sql</code>
+                  .
+                  </p>
+                </div>
+              ) : !user ? (
+                <p className="text-sm text-on-surface-variant dark:text-slate-400">
+                  You are not signed in.{" "}
+                  <a className="font-bold text-primary underline-offset-2 hover:underline" href="/login">
+                    Sign in
+                  </a>{" "}
+                  to sync your account from Supabase.
+                </p>
+              ) : (
+                <div className="space-y-8 rounded-xl bg-surface-container-low p-8 dark:bg-slate-900">
+                  <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <label
+                        className="ml-1 text-xs font-bold uppercase tracking-wider
+                          text-on-surface-variant dark:text-slate-400"
+                      >
+                        {t("settings.fullName")}
+                      </label>
+                      <input
+                        key={appUser?.username ?? "un"}
+                        readOnly
+                        className="w-full cursor-not-allowed rounded-lg border
+                          border-outline-variant/15 bg-surface-container-lowest px-4 py-3
+                          outline-none dark:border-slate-800 dark:bg-slate-950"
+                        type="text"
+                        defaultValue={appUser?.username ?? ""}
+                        placeholder="—"
+                      />
+                      <p className="text-xs text-on-surface-variant dark:text-slate-500">
+                        Username is managed in your registry record.
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <label
+                        className="ml-1 text-xs font-bold uppercase tracking-wider
+                          text-on-surface-variant dark:text-slate-400"
+                      >
+                        {t("settings.email")}
+                      </label>
+                      <input
+                        key={user.id}
+                        readOnly
+                        className="w-full cursor-not-allowed rounded-lg border
+                          border-outline-variant/15 bg-surface-container-lowest px-4 py-3
+                          outline-none dark:border-slate-800 dark:bg-slate-950"
+                        type="email"
+                        defaultValue={user.email ?? ""}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label
+                      className="ml-1 text-xs font-bold uppercase tracking-wider
+                        text-on-surface-variant dark:text-slate-400"
+                    >
+                      {t("settings.access")}
+                    </label>
+                    <p className="text-sm text-on-surface dark:text-slate-200">
+                      {admin ? (
+                        <span className="font-semibold text-primary dark:text-blue-400">
+                          {t("role.administrator")}
+                        </span>
+                      ) : appUser?.status === "pending" ? (
+                        <span className="text-on-surface-variant">
+                          {t("settings.awaitingApproval")}
+                        </span>
+                      ) : (
+                        <span>{t("role.activeUser")}</span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </section>
+          </div>
+        )}
+
+        {activeTab === "appearance" && (
+          <div className="space-y-16">
+            <section>
+              <div className="mb-8 flex items-baseline justify-between">
+                <h2 className="text-2xl font-bold tracking-tight">{t("settings.themeTitle")}</h2>
+                <span className="text-xs font-bold uppercase tracking-widest text-outline">
+                  Theme
+                </span>
+              </div>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div
+                  onClick={() => setTheme("light")}
+                  className={`relative cursor-pointer overflow-hidden rounded-2xl border-2
+                    bg-white p-6 transition-all dark:bg-slate-100
+                    ${theme === "light" ? "border-primary" : "border-transparent hover:border-slate-300"}`}
+                >
+                  <div className="mb-8 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-primary" data-icon="light_mode">
+                        light_mode
+                      </span>
+                      <span className="font-bold text-on-surface">{t("settings.lightMode")}</span>
+                    </div>
+                    <div
+                      className={`h-5 w-5 rounded-full border-4
+                        ${theme === "light" ? "border-primary bg-white" : "border-slate-300"}`}
+                    ></div>
+                  </div>
+                </div>
+
+                <div
+                  onClick={() => setTheme("dark")}
+                  className={`relative cursor-pointer overflow-hidden rounded-2xl border-2
+                    bg-slate-900 p-6 transition-all
+                    ${theme === "dark" ? "border-primary" : "border-transparent hover:border-slate-700"}`}
+                >
+                  <div className="mb-8 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-slate-400" data-icon="dark_mode">
+                        dark_mode
+                      </span>
+                      <span className="font-bold text-white">{t("settings.darkMode")}</span>
+                    </div>
+                    <div
+                      className={`h-5 w-5 rounded-full border-4
+                        ${theme === "dark" ? "border-primary bg-slate-900" : "border-slate-700"}`}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
       </main>
     </div>
   );

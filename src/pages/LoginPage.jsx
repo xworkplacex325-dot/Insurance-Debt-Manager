@@ -1,103 +1,155 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+import { loginWithUsername } from "../hooks/useSupabaseUser";
+import { useLanguage } from "../contexts/LanguageContext";
+
 export default function LoginPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || "/";
+  const { t, language, toggleLanguage } = useLanguage();
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("user");
+    if (saved) {
+      const user = JSON.parse(saved);
+      if (user?.status === "approved") {
+        navigate(from, { replace: true });
+      }
+    }
+  }, [navigate, from]);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const rawUsername = username.trim();
+    const rawPassword = password.trim();
+
+    if (!rawUsername || !rawPassword) {
+      toast.error(t("login.instructions"));
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      await loginWithUsername(rawUsername, rawPassword);
+      toast.success(t("login.signIn") + " ✓");
+      navigate(from, { replace: true });
+    } catch (err) {
+      toast.error(err.message || "Sign in failed");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
-    <div className="bg-background text-on-background min-h-screen flex flex-col items-center justify-center p-6 selection:bg-primary-container selection:text-on-primary-container">
-      {/* Subtle Background Element */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-[10%] -left-[5%] w-[40%] h-[40%] rounded-full bg-secondary-container/20 blur-[120px]"></div>
-        <div className="absolute -bottom-[10%] -right-[5%] w-[30%] h-[30%] rounded-full bg-primary-container/10 blur-[100px]"></div>
-      </div>
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-950">
+      {/* Dynamic Background Elements */}
+      <div className="absolute left-1/2 top-1/2 -z-10 aspect-square w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-tr from-blue-600/30 to-purple-600/30 blur-3xl opacity-50 dark:from-blue-600/20 dark:to-cyan-600/20"></div>
       
-      {/* Login Container */}
-      <main className="w-full max-w-[440px] animate-in fade-in slide-in-from-bottom-4 duration-700">
-        
-        {/* Branding Anchor */}
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-extrabold tracking-tight text-on-background mb-2">
-            Clarified Curator
+      {/* Language Toggle */}
+      <button
+        onClick={toggleLanguage}
+        className="absolute right-6 top-6 z-50 flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white/50 px-4 py-2 text-sm font-bold shadow-sm backdrop-blur-md transition-all hover:bg-white dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-200 dark:hover:bg-slate-900 md:right-10 md:top-10 lg:right-12 lg:top-12"
+      >
+        <span className="material-symbols-outlined text-[18px]">language</span>
+        {language === "en" ? "عربي" : "EN"}
+      </button>
+
+      <main className="w-full max-w-[480px] p-6 lg:p-8">
+        <div className="mb-10 text-center">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-500/20">
+            <span className="material-symbols-outlined text-3xl">corporate_fare</span>
+          </div>
+          <h1 className="mb-3 text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+            {t("app.title")}
           </h1>
-          <p className="text-on-surface-variant font-medium">
-            The Administrative Editorial
+          <p className="text-lg font-medium text-slate-500 dark:text-slate-400">
+            {t("app.subtitle")}
           </p>
         </div>
 
-        {/* Auth Card */}
-        <div className="bg-surface-container-lowest rounded-xl p-10 shadow-sm ghost-border">
+        <div className="rounded-3xl border border-white/40 bg-white/60 p-8 shadow-2xl shadow-slate-200/50 backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-900/60 dark:shadow-none sm:p-12">
           <header className="mb-8">
-            <h2 className="text-xl font-bold text-on-surface">Welcome back</h2>
-            <p className="text-on-surface-variant text-sm mt-1">Please enter your credentials to continue.</p>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t("login.welcome")}</h2>
+            <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+              {t("login.instructions")}
+            </p>
           </header>
 
-          <form action="#" className="space-y-6" method="POST">
-            {/* Field Group: Email */}
+          <form className="space-y-6" onSubmit={handleSubmit} dir={language === "ar" ? "rtl" : "ltr"}>
+            {/* Username */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold tracking-wider uppercase text-on-surface-variant px-1" htmlFor="email">
-                Professional Email
+              <label className="ml-1 text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                {t("login.username")}
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-lg">mail</span>
-                <input className="w-full pl-12 pr-4 py-4 bg-surface-container-low border-transparent ghost-border rounded-lg focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 outline-none text-on-surface placeholder:text-outline/60" id="email" name="email" placeholder="name@organization.com" required type="email" />
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                  person
+                </span>
+                <input
+                  className="w-full rounded-xl border border-slate-200 bg-white/80 py-3.5 pl-12 pr-4 text-slate-900 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-slate-700/50 dark:bg-slate-800/80 dark:text-white"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="e.g. ahmed_rakha"
+                  dir="ltr"
+                />
               </div>
             </div>
 
-            {/* Field Group: Password */}
+            {/* Password */}
             <div className="space-y-2">
-              <div className="flex justify-between items-center px-1">
-                <label className="block text-xs font-bold tracking-wider uppercase text-on-surface-variant" htmlFor="password">
-                  Security Key
-                </label>
-                <a className="text-xs font-semibold text-primary hover:text-primary-dim transition-colors" href="#">
-                  Forgot?
-                </a>
-              </div>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-lg">lock</span>
-                <input className="w-full pl-12 pr-4 py-4 bg-surface-container-low border-transparent ghost-border rounded-lg focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 outline-none text-on-surface placeholder:text-outline/60" id="password" name="password" placeholder="••••••••" required type="password" />
-              </div>
-            </div>
-
-            {/* Remember Me Toggle */}
-            <div className="flex items-center px-1">
-              <input className="h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary/20 bg-surface-container-low transition-all" id="remember" name="remember" type="checkbox" />
-              <label className="ml-3 block text-sm text-on-surface-variant font-medium" htmlFor="remember">
-                Remember this device
+              <label className="ml-1 text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                {t("login.password")}
               </label>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                  lock
+                </span>
+                <input
+                  className="w-full rounded-xl border border-slate-200 bg-white/80 py-3.5 pl-12 pr-14 text-slate-900 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-slate-700/50 dark:bg-slate-800/80 dark:text-white"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  dir="ltr"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold uppercase text-blue-600 dark:text-blue-400"
+                >
+                  {showPassword ? t("login.hide") : t("login.show")}
+                </button>
+              </div>
             </div>
 
-            {/* Primary Action */}
-            <button className="w-full editorial-gradient text-on-primary-fixed font-bold py-4 rounded-lg shadow-lg shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 group" type="submit">
-              Sign In
-              <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            {/* Submit */}
+            <button
+              className="mt-8 w-full rounded-xl bg-blue-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-600/30 transition-transform active:scale-95 disabled:opacity-70 dark:bg-blue-600"
+              type="submit"
+              disabled={submitting}
+            >
+              {submitting ? t("login.signingIn") : t("login.signIn")}
             </button>
           </form>
 
-          {/* Footer Tonal Section */}
-          <footer className="mt-10 pt-8 border-t border-surface-variant flex flex-col items-center gap-4">
-            <p className="text-sm text-on-surface-variant">
-              Don't have an account? 
-              <a className="text-primary font-bold hover:underline underline-offset-4 ml-1" href="#">Contact Registry</a>
-            </p>
+          <footer className="mt-8 text-center text-sm font-medium text-slate-600 dark:text-slate-400">
+            {t("login.noAccount")}{" "}
+            <Link to="/register" className="font-bold text-blue-600 hover:underline dark:text-blue-400">
+              {t("login.register")}
+            </Link>
           </footer>
         </div>
-
-        {/* Decorative Illustration Element (Optional/Minimalist) */}
-        <div className="mt-12 flex justify-center items-center gap-8 opacity-40">
-          <div className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all cursor-default">
-            <span className="material-symbols-outlined text-on-surface-variant">verified_user</span>
-            <span className="text-[10px] font-bold tracking-widest uppercase text-on-surface-variant">Secure Vault</span>
-          </div>
-          <div className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all cursor-default">
-            <span className="material-symbols-outlined text-on-surface-variant">analytics</span>
-            <span className="text-[10px] font-bold tracking-widest uppercase text-on-surface-variant">Editorial Suite</span>
-          </div>
-        </div>
       </main>
-
-      {/* Support Links */}
-      <nav className="fixed bottom-8 w-full flex justify-center gap-8 text-[11px] font-bold tracking-widest uppercase text-outline">
-        <a className="hover:text-primary transition-colors" href="#">Security Policy</a>
-        <a className="hover:text-primary transition-colors" href="#">Help Desk</a>
-        <a className="hover:text-primary transition-colors" href="#">System Status</a>
-      </nav>
     </div>
   );
 }
