@@ -514,8 +514,13 @@ export default function DashboardFormsList() {
                                 <button
                                   type="button"
                                   onClick={() => {
+                                    const formId = row.id || row.form_number || row.formNumber;
+                                    if (!formId) {
+                                      toast.error("Error: Could not find form ID to delete.");
+                                      return;
+                                    }
                                     if (window.confirm("Are you sure you want to delete this form?")) {
-                                      deleteMutation.mutate(row.id);
+                                      deleteMutation.mutate(formId);
                                     }
                                   }}
                                   disabled={deleteMutation.isPending}

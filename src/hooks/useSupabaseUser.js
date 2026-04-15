@@ -1,21 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "./useSupabase";
 export const SUPABASE_USER_QUERY_KEY = ["supabase-user"];
-// Simple user state stored in localStorage
 export function useSupabaseUser() {
   const [data, setData] = useState(() => {
     const saved = localStorage.getItem("user");
     return saved ? JSON.parse(saved) : null;
   });
 
-  return {
+  return useMemo(() => ({
     data: {
       user: data,
       appUser: data,
     },
     isLoading: false,
     error: null,
-  };
+  }), [data]);
 }
 
 export function isUserAdmin(user, appUser) {

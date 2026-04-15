@@ -36,7 +36,7 @@ export default function UsersManagementPage() {
     const { data, error } = await supabase
       .from("users")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("id", { ascending: true });
 
     if (error) {
       toast.error("Failed to load users: " + error.message);
@@ -53,7 +53,12 @@ export default function UsersManagementPage() {
     const { error } = await supabase.from("users").delete().eq("id", userId);
 
     if (error) {
-      toast.error("Failed to delete user. Please check database policies.");
+      console.error("Error deleting user:", error);
+      if (error.code === '23503' || error.message.includes("foreign key constraint")) {
+         toast.error("Cannot delete user: They still have forms assigned to them. Please delete their forms or update the database foreign key to 'ON DELETE CASCADE'.");
+      } else {
+         toast.error("Failed to delete user: " + (error.message || error.details || "Check database policies"));
+      }
     } else {
       toast.success("User deleted successfully.");
       setUsers((prev) => prev.filter((u) => u.id !== userId));
