@@ -1,35 +1,29 @@
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { FORMS_QUERY_KEY, useAddForm } from "./formsManagement";
+import { FORMS_QUERY_KEY, useUpdateForm } from "./formsManagement";
 import { useModal } from "./useModal";
-import { useSupabaseUser } from "../hooks/useSupabaseUser";
 import { useLanguage } from "../contexts/LanguageContext";
 
-export default function NewFormContent({ defaultDate }) {
-  const resolvedDefaultDate = defaultDate ?? new Date().toISOString().split("T")[0];
+export default function EditFormContent({ form }) {
   const { close } = useModal();
   const queryClient = useQueryClient();
-  const { addForm } = useAddForm();
-  
-  const { data: authPayload } = useSupabaseUser();
-  const username = authPayload?.appUser?.username || "Guest";
+  const { updateForm } = useUpdateForm();
   const { t } = useLanguage();
 
   const {
     register,
     handleSubmit,
-    reset,
     watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      companyName: "",
-      formNumber: "",
-      formDate: resolvedDefaultDate,
-      debit: false,
-      debtValue: "",
-      monthlyCharge: "",
+      companyName: form.company_name ?? form.companyName ?? "",
+      formNumber: form.id ?? form.formNumber ?? "",
+      formDate: form.form_date ?? form.formDate ?? "",
+      debit: form.debit ?? false,
+      debtValue: form.debt_value ?? "",
+      monthlyCharge: form.monthly_charge ?? "",
     },
   });
 
@@ -46,27 +40,28 @@ export default function NewFormContent({ defaultDate }) {
       : null;
 
   const { mutate, isPending } = useMutation({
-    mutationFn: addForm,
+    mutationFn: updateForm,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: FORMS_QUERY_KEY });
-      toast.success("Form added successfully");
-      reset({
-        companyName: "",
-        formNumber: "",
-        formDate: resolvedDefaultDate,
-        debit: false,
-        debtValue: "",
-        monthlyCharge: "",
-      });
+      toast.success(t("form.updateSuccess") || "Form updated successfully");
       close();
     },
     onError: (err) => {
-      toast.error(err?.message ?? "Failed to add form");
+      toast.error(err?.message || t("form.updateError") || "Failed to update form");
     },
   });
 
   const onSubmit = (values) => {
-    mutate({ ...values, addedBy: username });
+    const payload = {
+      originalId: form.id, // Keep track of the original primary key ID for querying
+      id: values.formNumber.trim(), // The new primary key ID
+      company_name: values.companyName.trim(),
+      form_date: values.formDate,
+      debit: values.debit,
+      debt_value: values.debit ? (values.debtValue === "" ? null : Number(values.debtValue)) : null,
+      monthly_charge: values.debit ? (values.monthlyCharge === "" ? null : Number(values.monthlyCharge)) : null,
+    };
+    mutate(payload);
   };
 
   return (
@@ -75,23 +70,24 @@ export default function NewFormContent({ defaultDate }) {
         className="mb-4 font-headline text-xl font-bold text-on-surface
           dark:text-slate-50"
       >
-        {t("form.createTitle")}
+        {t("form.editTitle")}
       </h2>
       <p className="mb-6 text-sm text-on-surface-variant dark:text-slate-400">
-        {t("form.createDesc")}
+        {t("form.editDesc")}
       </p>
 
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+        {/* Company Name Field */}
         <div className="space-y-2">
           <label
-            htmlFor="new-form-company-name"
+            htmlFor="edit-form-company-name"
             className="ml-1 font-label text-xs font-bold uppercase tracking-wider
               text-on-surface-variant dark:text-slate-400"
           >
             {t("dash.colCompany")}
           </label>
           <input
-            id="new-form-company-name"
+            id="edit-form-company-name"
             type="text"
             autoComplete="organization"
             className="w-full rounded-lg border border-outline-variant/20
@@ -107,25 +103,25 @@ export default function NewFormContent({ defaultDate }) {
               setValueAs: (v) => (typeof v === "string" ? v.trim() : v),
             })}
           />
-          {errors.companyName ? (
+          {errors.companyName && (
             <p className="ml-1 text-xs font-medium text-error dark:text-error-container">
               {errors.companyName.message}
             </p>
-          ) : null}
+          )}
         </div>
 
+        {/* Company ID Field (Fully Editable) */}
         <div className="space-y-2">
           <label
-            htmlFor="new-form-number"
+            htmlFor="edit-form-number"
             className="ml-1 font-label text-xs font-bold uppercase tracking-wider
               text-on-surface-variant dark:text-slate-400"
           >
             {t("dash.colFormNumber")}
           </label>
           <input
-            id="new-form-number"
+            id="edit-form-number"
             type="text"
-            autoComplete="off"
             className="w-full rounded-lg border border-outline-variant/20
               bg-surface-container-lowest px-4 py-3 text-on-surface
               placeholder-slate-400 outline-none transition-all focus:ring-4
@@ -139,23 +135,24 @@ export default function NewFormContent({ defaultDate }) {
               setValueAs: (v) => (typeof v === "string" ? v.trim() : v),
             })}
           />
-          {errors.formNumber ? (
+          {errors.formNumber && (
             <p className="ml-1 text-xs font-medium text-error dark:text-error-container">
               {errors.formNumber.message}
             </p>
-          ) : null}
+          )}
         </div>
 
+        {/* Form Date Field */}
         <div className="space-y-2">
           <label
-            htmlFor="new-form-date"
+            htmlFor="edit-form-date"
             className="ml-1 font-label text-xs font-bold uppercase tracking-wider
               text-on-surface-variant dark:text-slate-400"
           >
             {t("dash.colFormDate")}
           </label>
           <input
-            id="new-form-date"
+            id="edit-form-date"
             type="date"
             className="w-full rounded-lg border border-outline-variant/20
               bg-surface-container-lowest px-4 py-3 text-on-surface outline-none
@@ -165,11 +162,11 @@ export default function NewFormContent({ defaultDate }) {
             aria-invalid={errors.formDate ? "true" : "false"}
             {...register("formDate", { required: "Form date is required" })}
           />
-          {errors.formDate ? (
+          {errors.formDate && (
             <p className="ml-1 text-xs font-medium text-error dark:text-error-container">
               {errors.formDate.message}
             </p>
-          ) : null}
+          )}
         </div>
 
         {/* Debit Status Toggle Switch */}
@@ -183,7 +180,7 @@ export default function NewFormContent({ defaultDate }) {
               {t("form.debitLabel")}
             </span>
             <span className="text-[11px] text-outline dark:text-slate-400">
-              Toggle if this company has an active debt record.
+              Toggle if this form is marked for active debit auditing.
             </span>
           </div>
           <label className="relative inline-flex cursor-pointer items-center">
@@ -204,7 +201,7 @@ export default function NewFormContent({ defaultDate }) {
           </label>
         </div>
 
-        {/* Dynamic Debt Value & Monthly Charge Fields */}
+        {/* Dynamic Debt Value & Monthly Charge Fields (Smooth Animation styling) */}
         {isDebit && (
           <div
             className="space-y-4 rounded-xl border border-primary/10 bg-primary/5 p-4
@@ -213,14 +210,14 @@ export default function NewFormContent({ defaultDate }) {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label
-                  htmlFor="new-form-debt-value"
+                  htmlFor="edit-form-debt-value"
                   className="ml-1 font-label text-xs font-bold uppercase tracking-wider
                     text-on-surface-variant dark:text-slate-400"
                 >
                   {t("form.debtValue")}
                 </label>
                 <input
-                  id="new-form-debt-value"
+                  id="edit-form-debt-value"
                   type="number"
                   step="any"
                   className="w-full rounded-lg border border-outline-variant/20
@@ -244,14 +241,14 @@ export default function NewFormContent({ defaultDate }) {
 
               <div className="space-y-2">
                 <label
-                  htmlFor="new-form-monthly-charge"
+                  htmlFor="edit-form-monthly-charge"
                   className="ml-1 font-label text-xs font-bold uppercase tracking-wider
                     text-on-surface-variant dark:text-slate-400"
                 >
                   {t("form.monthlyCharge")}
                 </label>
                 <input
-                  id="new-form-monthly-charge"
+                  id="edit-form-monthly-charge"
                   type="number"
                   step="any"
                   className="w-full rounded-lg border border-outline-variant/20

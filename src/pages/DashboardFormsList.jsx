@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Modal from "../components/Modal";
 import NewFormContent from "../components/NewFormContent";
+import EditFormContent from "../components/EditFormContent";
 import { FORMS_QUERY_KEY, useGetForms, useDeleteForm } from "../components/formsManagement";
 import { useTheme } from "../contexts/ThemeContext";
 import { useSupabaseUser, logout, isUserAdmin } from "../hooks/useSupabaseUser";
@@ -431,7 +432,12 @@ export default function DashboardFormsList() {
                       const rawDate = row.form_date ?? row.formDate;
                       const addedBy =
                         row.added_by ?? row.addedBy ?? row.added_by_name ?? "—";
-                      const staleBySixMonths = isFormDateSixOrMoreMonthsOld(rawDate);
+                      const staleBySixMonths = isFormDateSixOrMoreMonthsOld(row.created_at || rawDate);
+                      const monthsOfDebt = row.debit && row.monthly_charge > 0
+                        ? (row.debt_value / row.monthly_charge)
+                        : 0;
+                      const excessiveDebt = row.debit && monthsOfDebt > 12;
+                      const markRed = staleBySixMonths || excessiveDebt;
                       const zebra =
                         index % 2 === 1
                           ? "bg-surface-container-low/30 dark:bg-slate-800/40"
@@ -473,9 +479,16 @@ export default function DashboardFormsList() {
                           </td>
                           <td className="px-8 py-6">
                             <div
+                              title={
+                                excessiveDebt
+                                  ? `Debt ratio exceeds 12 months (${monthsOfDebt.toFixed(1)} months)`
+                                  : staleBySixMonths
+                                    ? "Company record is more than 6 months old"
+                                    : ""
+                              }
                               className={`inline-flex items-center rounded-full px-4 py-1.5
                                 font-label text-xs font-bold ${
-                                  staleBySixMonths
+                                  markRed
                                     ? `bg-error-container text-on-error-container
                                       dark:bg-error/40 dark:text-error-container`
                                     : `bg-tertiary-container text-on-tertiary-container
@@ -498,28 +511,36 @@ export default function DashboardFormsList() {
                           </td>
                           <td className="px-8 py-6 text-right">
                             <div className="flex items-center gap-2 justify-end">
-                              <button
-                                type="button"
-                                className="rounded-lg p-2 text-primary opacity-0
-                                  transition-all hover:bg-primary/10 group-hover:opacity-100"
-                              >
-                                <span
-                                  className="material-symbols-outlined"
-                                  data-icon="open_in_new"
-                                >
-                                  open_in_new
-                                </span>
-                              </button>
+                              <Modal>
+                                <Modal.Open opens={`edit-form-${row.id}`}>
+                                  <button
+                                    type="button"
+                                    title={t("form.editTitle") || "Edit Form"}
+                                    className="rounded-lg p-2 text-primary opacity-0
+                                      transition-all hover:bg-primary/10 group-hover:opacity-100"
+                                  >
+                                    <span
+                                      className="material-symbols-outlined"
+                                      data-icon="edit"
+                                    >
+                                      edit
+                                    </span>
+                                  </button>
+                                </Modal.Open>
+                                <Modal.Window name={`edit-form-${row.id}`}>
+                                  <EditFormContent form={row} />
+                                </Modal.Window>
+                              </Modal>
                               {admin && (
                                 <button
                                   type="button"
                                   onClick={() => {
                                     const formId = row.id || row.form_number || row.formNumber;
                                     if (!formId) {
-                                      toast.error("Error: Could not find form ID to delete.");
+                                      toast.error("Error: Could not find Company ID to delete.");
                                       return;
                                     }
-                                    if (window.confirm("Are you sure you want to delete this form?")) {
+                                    if (window.confirm("Are you sure you want to delete this record?")) {
                                       deleteMutation.mutate(formId);
                                     }
                                   }}

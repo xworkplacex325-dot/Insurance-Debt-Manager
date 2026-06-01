@@ -4,7 +4,7 @@ import { supabase } from "../hooks/useSupabase";
 export const FORMS_QUERY_KEY = ["debt-forms"];
 
 export const useAddForm = () => {
-  const addForm = async ({ companyName, formNumber, formDate, addedBy }) => {
+  const addForm = async ({ companyName, formNumber, formDate, addedBy, debit, debtValue, monthlyCharge }) => {
     const { data, error } = await supabase
       .from("debt-forms")
       .insert({
@@ -12,6 +12,9 @@ export const useAddForm = () => {
         id: formNumber.trim(),
         form_date: formDate,
         added_by: addedBy,
+        debit: debit ?? false,
+        debt_value: debit ? (debtValue === "" ? null : Number(debtValue)) : null,
+        monthly_charge: debit ? (monthlyCharge === "" ? null : Number(monthlyCharge)) : null,
       })
       .select()
       .single();
@@ -32,8 +35,8 @@ export const useGetForms = () => {
   return { getForms };
 };
 export const useUpdateForm = () => {
-  const updateForm = async (form) => {
-    const { data, error } = await supabase.from("debt-forms").update(form).eq("id", form.id);
+  const updateForm = async ({ originalId, ...form }) => {
+    const { data, error } = await supabase.from("debt-forms").update(form).eq("id", originalId);
     if (error) throw error;
     return data;
   };

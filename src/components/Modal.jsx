@@ -41,7 +41,7 @@ function Window({ children, name }) {
       >
         <button
           onClick={close}
-          className="absolute right-4 top-4 flex cursor-pointer select-none items-center
+          className="absolute right-1 top-1 flex cursor-pointer select-none items-center
             justify-center rounded-full p-2 text-on-surface-variant transition-colors
             hover:bg-surface-container-high dark:text-slate-400 dark:hover:bg-slate-800"
         >
