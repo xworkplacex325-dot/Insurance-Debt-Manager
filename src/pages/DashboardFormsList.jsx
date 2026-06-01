@@ -42,9 +42,6 @@ export default function DashboardFormsList() {
   const { data: userData } = useSupabaseUser();
   const currentUser = userData?.appUser;
   const admin = isUserAdmin(userData?.user, currentUser);
-  // 2. Inside the component, after getting currentUser:
-const { data: userData } = useSupabaseUser();
-const currentUser = userData?.appUser;
 const userId = userData?.user?.id;
   const { t, language } = useLanguage();
   const { theme, toggleTheme } = useTheme();
