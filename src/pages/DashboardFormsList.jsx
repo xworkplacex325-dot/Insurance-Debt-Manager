@@ -8,6 +8,10 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useSupabaseUser, logout, isUserAdmin } from "../hooks/useSupabaseUser";
 import { useLanguage } from "../contexts/LanguageContext";
 import { toast } from "react-toastify";
+import { useAvatar } from "../hooks/useAvatar";
+
+
+
 
 function formatFormDate(value) {
   if (!value) return "—";
@@ -38,7 +42,10 @@ export default function DashboardFormsList() {
   const { data: userData } = useSupabaseUser();
   const currentUser = userData?.appUser;
   const admin = isUserAdmin(userData?.user, currentUser);
-  
+  // 2. Inside the component, after getting currentUser:
+const { data: userData } = useSupabaseUser();
+const currentUser = userData?.appUser;
+const userId = userData?.user?.id;
   const { t, language } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const queryClient = useQueryClient();

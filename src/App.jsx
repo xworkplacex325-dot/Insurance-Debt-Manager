@@ -12,7 +12,7 @@ import ProtectedLayout from "./layouts/ProtectedLayout";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import AppToasts from "./components/AppToasts";
-
+import { Toaster } from 'sonner';
 const queryClient = new QueryClient();
 
 function App() {
@@ -34,6 +34,7 @@ function App() {
               <Route path="/admin/users" element={<UsersManagementPage />} />
             </Route>
           </Routes>
+          <Toaster />
           </BrowserRouter>
         </ThemeProvider>
       </LanguageProvider>
