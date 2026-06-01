@@ -9,7 +9,6 @@ export const useAddForm = () => {
       .from("debt-forms")
       .insert({
         company_name: companyName.trim(),
-        id: formNumber.trim(),
         form_date: formDate,
         added_by: addedBy,
         debit: debit ?? false,

@@ -8,7 +8,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useSupabaseUser, logout, isUserAdmin } from "../hooks/useSupabaseUser";
 import { useLanguage } from "../contexts/LanguageContext";
 import { toast } from "react-toastify";
-import { useAvatar } from "../hooks/useAvatar";
+
 
 
 

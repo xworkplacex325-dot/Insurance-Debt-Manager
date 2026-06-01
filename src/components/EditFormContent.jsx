@@ -54,8 +54,8 @@ export default function EditFormContent({ form }) {
   const onSubmit = (values) => {
     const payload = {
       originalId: form.id, // Keep track of the original primary key ID for querying
-      id: values.formNumber.trim(), // The new primary key ID
-      company_name: values.companyName.trim(),
+      id: String(values.formNumber).trim(), // The new primary key ID
+      company_name: String(values.companyName).trim(),
       form_date: values.formDate,
       debit: values.debit,
       debt_value: values.debit ? (values.debtValue === "" ? null : Number(values.debtValue)) : null,
