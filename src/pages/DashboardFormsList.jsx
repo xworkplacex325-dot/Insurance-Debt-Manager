@@ -24,16 +24,13 @@ function formatFormDate(value) {
 /** Red badge when the form date is on or before “today minus 6 calendar months”. */
 function isFormDateSixOrMoreMonthsOld(value) {
   if (!value) return false;
-  const s = typeof value === "string" ? value : String(value);
-  const formDay = new Date(s.includes("T") ? s : `${s}T12:00:00`);
+
+  const formDay = new Date(value);
   if (Number.isNaN(formDay.getTime())) return false;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  formDay.setHours(0, 0, 0, 0);
-
-  const sixMonthsAgo = new Date(today);
+  const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  sixMonthsAgo.setHours(0, 0, 0, 0);
 
   return formDay <= sixMonthsAgo;
 }
@@ -42,7 +39,7 @@ export default function DashboardFormsList() {
   const { data: userData } = useSupabaseUser();
   const currentUser = userData?.appUser;
   const admin = isUserAdmin(userData?.user, currentUser);
-const userId = userData?.user?.id;
+  const userId = userData?.user?.id;
   const { t, language } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const queryClient = useQueryClient();
@@ -436,7 +433,7 @@ const userId = userData?.user?.id;
                       const rawDate = row.form_date ?? row.formDate;
                       const addedBy =
                         row.added_by ?? row.addedBy ?? row.added_by_name ?? "—";
-                      const staleBySixMonths = isFormDateSixOrMoreMonthsOld(row.created_at || rawDate);
+                      const staleBySixMonths = isFormDateSixOrMoreMonthsOld(rawDate);
                       const monthsOfDebt = row.debit && row.monthly_charge > 0
                         ? (row.debt_value / row.monthly_charge)
                         : 0;
@@ -491,11 +488,10 @@ const userId = userData?.user?.id;
                                     : ""
                               }
                               className={`inline-flex items-center rounded-full px-4 py-1.5
-                                font-label text-xs font-bold ${
-                                  markRed
-                                    ? `bg-error-container text-on-error-container
+                                font-label text-xs font-bold ${markRed
+                                  ? `bg-error-container text-on-error-container
                                       dark:bg-error/40 dark:text-error-container`
-                                    : `bg-tertiary-container text-on-tertiary-container
+                                  : `bg-tertiary-container text-on-tertiary-container
                                       dark:bg-tertiary/40 dark:text-tertiary-container`
                                 }`}
                             >
