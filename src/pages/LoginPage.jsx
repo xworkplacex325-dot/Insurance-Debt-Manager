@@ -99,7 +99,7 @@ export default function LoginPage() {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="e.g. ahmed_rakha"
+                  placeholder="e.g. Saad_Mohamed"
                   dir="ltr"
                 />
               </div>
