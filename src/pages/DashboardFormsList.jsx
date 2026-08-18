@@ -331,7 +331,7 @@ export default function DashboardFormsList() {
                   dark:border-slate-800 dark:bg-slate-900 dark:text-slate-50"
               />
             </div>
-            <div>
+            <div className="flex gap-5">
 
             {/* Show Only Debit Companies ) */}
             <button
@@ -340,7 +340,7 @@ export default function DashboardFormsList() {
                 font-bold text-on-surface-variant shadow-sm transition-colors
                 hover:bg-surface-container-low dark:border-slate-800 dark:bg-slate-900
                 dark:text-slate-400 dark:hover:bg-slate-800 ${
-                  onlyDebit ? "bg-primary text-slate-400 " : ""
+                  onlyDebit ? "bg-primary text-slate-400 dark:text-slate-600  dark:bg-slate-800" : ""
                 }`}
                 onClick={() => setOnlyDebit(!onlyDebit)}
                 >
