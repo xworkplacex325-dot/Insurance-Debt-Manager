@@ -48,6 +48,7 @@ export const translations = {
     "dash.addNewForm": "Add New Form",
     "dash.searchPlaceholder": "Search entries by company, ID, or initiator...",
     "dash.filter": "Filter",
+    "dash.onlyDebit": "Show Only Debit",
     "dash.colCompany": "Company Name",
     "dash.colFormNumber": "Company ID",
     "dash.colFormDate": "Form Date",
@@ -162,9 +163,10 @@ export const translations = {
     "dash.title": "نظرة عامة على السجل",
     "dash.description": "إدارة وتتبع النماذج الفعلية. كل إدخال يتم تنسيقه للتدقيق الإداري والمراقبة.",
     "dash.exportReport": "تصدير التقرير",
-    "dash.addNewForm": "إضافة نموذج جديد",
+    "dash.addNewForm": "إضافة برنت جديد",
     "dash.searchPlaceholder": "ابحث باسم الشركة، رقم المنشأة، أو تاريخ إصدار البرنت...",
     "dash.filter": "تصفية",
+    "dash.onlyDebit": "عرض الشركات المدينة  فقط",
     "dash.colCompany": "اسم الشركة",
     "dash.colFormNumber": "رقم المنشأة",
     "dash.colFormDate": "تاريخ إصدار البرنت",
@@ -177,7 +179,7 @@ export const translations = {
 
 
     // New Form Modal & Actions
-    "form.createTitle": "إضافة نموذج جديد",
+    "form.createTitle": "إضافة برنت جديد",
     "form.createDesc": "املأ التفاصيل لإنشاء قيد جديد في السجل.",
     "form.editTitle": "تعديل تفاصيل النموذج",
     "form.editDesc": "تعديل معلومات النموذج وتحديث السجلات في النظام.",

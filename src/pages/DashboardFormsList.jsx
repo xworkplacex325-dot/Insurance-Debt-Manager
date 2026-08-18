@@ -50,7 +50,6 @@ export default function DashboardFormsList() {
     queryKey: FORMS_QUERY_KEY,
     queryFn: getForms,
   });
-
   const deleteMutation = useMutation({
     mutationFn: deleteForm,
     onSuccess: () => {
@@ -64,7 +63,7 @@ export default function DashboardFormsList() {
   });
 
   const [search, setSearch] = useState("");
-
+  const [onlyDebit, setOnlyDebit] = useState(false);
   const filteredForms = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return forms;
@@ -75,7 +74,17 @@ export default function DashboardFormsList() {
       return company.includes(q) || id.includes(q) || by.includes(q);
     });
   }, [forms, search]);
-
+  const myFilter = onlyDebit ? filteredForms.filter(form=>{
+   const rawDate = form.form_date ?? form.formDate;
+   const staleBySixMonths = isFormDateSixOrMoreMonthsOld(rawDate);
+                      const monthsOfDebt = form.debit && form.monthly_charge > 0
+                        ? (form.debt_value / form.monthly_charge)
+                        : 0;
+                      const excessiveDebt = form.debit && monthsOfDebt > 12;
+                      const markRed = staleBySixMonths || excessiveDebt;
+                      return markRed
+  }) : filteredForms;
+  console.log(myFilter)
   return (
     <div
       className="min-h-screen bg-background transition-colors duration-300
@@ -322,6 +331,20 @@ export default function DashboardFormsList() {
                   dark:border-slate-800 dark:bg-slate-900 dark:text-slate-50"
               />
             </div>
+            {/* Show Only Debit Companies ) */}
+            <button
+              className={`flex items-center gap-2 rounded-xl border 
+                border-outline-variant/15 bg-surface-container-lowest px-4 py-3 text-sm
+                font-bold text-on-surface-variant shadow-sm transition-colors
+                hover:bg-surface-container-low dark:border-slate-800 dark:bg-slate-900
+                dark:text-slate-400 dark:hover:bg-slate-800 ${
+                  onlyDebit ? "bg-primary text-slate-400 " : ""
+                }`}
+              onClick={() => setOnlyDebit(!onlyDebit)}
+            >
+              <span className="material-symbols-outlined text-[18px]"></span>
+              {t("dash.onlyDebit")}
+            </button>
 
             {/* Optional Filter Button (Visual consistency) */}
             <button
@@ -425,7 +448,7 @@ export default function DashboardFormsList() {
                       </td>
                     </tr>
                   ) : (
-                    filteredForms.map((row, index) => {
+                    myFilter.map((row, index) => {
                       const company =
                         row.company_name ?? row.companyName ?? "—";
                       const formNo =
